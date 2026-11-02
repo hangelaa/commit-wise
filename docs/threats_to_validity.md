@@ -18,3 +18,5 @@
 - **Size bias in labels:** SZZ blames the lines that a later fix deleted, so larger changes have more lines that can be blamed. Part of the link between size features and the label may come from the labeling method and not from real risk.
 - **Label latency:** a training label can depend on a fix made after the test period starts, so the model may indirectly use future information. The validation year (2016) only partly reduces this.
 - **Uneven project history:** projects such as Kafka have little training history compared with the test years, and small projects (ZooKeeper, ActiveMQ, Spark) have very few validation and test commits, so their per-project results are noisy.
+- **Single test year:** the final comparison uses one test year (2017) and no confidence intervals, so small differences between models are not statistically tested.
+- **Late-check labels:** in 2018-2019 only 15.3% of commits are labeled bug-inducing, so precision-based metrics there are not comparable with the test year and may understate the models.
