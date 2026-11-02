@@ -1,0 +1,19 @@
+,,logistic regression,lightgbm
+test 2017,ROC-AUC,0.7997,0.8185
+test 2017,PR-AUC,0.6089,0.6367
+test 2017,precision,0.5394,0.5782
+test 2017,recall,0.649,0.6393
+test 2017,F1,0.5891,0.6072
+test 2017,MCC,0.4187,0.451
+test 2017,bug share,0.2724,0.2724
+test 2017,flagged share,0.3278,0.3012
+test 2017,Recall@20%Effort (per line),0.5827,0.6004
+late check 2018-2019,ROC-AUC,0.7937,0.8008
+late check 2018-2019,PR-AUC,0.4126,0.4218
+late check 2018-2019,precision,0.3336,0.35
+late check 2018-2019,recall,0.6802,0.649
+late check 2018-2019,F1,0.4477,0.4548
+late check 2018-2019,MCC,0.3381,0.3447
+late check 2018-2019,bug share,0.1527,0.1527
+late check 2018-2019,flagged share,0.3114,0.2832
+late check 2018-2019,Recall@20%Effort (per line),0.5324,0.5465

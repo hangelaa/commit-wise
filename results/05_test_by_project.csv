@@ -1,0 +1,11 @@
+project,commits,bug share,logistic regression PR-AUC,logistic regression ROC-AUC,lightgbm PR-AUC,lightgbm ROC-AUC
+apache/camel,2130,0.0911,0.2996,0.761,0.2459,0.7508
+hadoop,1666,0.0924,0.1953,0.7193,0.1628,0.6919
+apache/ignite,1657,0.2891,0.7486,0.8585,0.7254,0.8515
+apache/flink,1139,0.396,0.7425,0.8165,0.727,0.8066
+apache/hbase,849,0.3451,0.6459,0.7932,0.6403,0.789
+apache/hive,844,0.5865,0.8402,0.8014,0.8523,0.8066
+apache/kafka,636,0.555,0.8841,0.8569,0.8779,0.8568
+apache/groovy,416,0.0865,0.2315,0.7299,0.3026,0.7391
+apache/cassandra,284,0.338,0.7356,0.8155,0.7422,0.8266
+apache/zeppelin,227,0.533,0.7908,0.7522,0.7977,0.7578
