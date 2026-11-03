@@ -43,12 +43,15 @@ def make_xgboost(y_train):
     )
 
 
-def make_lightgbm():
-    return LGBMClassifier(
+def make_lightgbm(**params):
+    """LightGBM with first-pass settings; keyword arguments override them."""
+    settings = dict(
         n_estimators=300, learning_rate=0.05, num_leaves=31, subsample=0.8,
         subsample_freq=1, colsample_bytree=0.8, class_weight="balanced",
         n_jobs=-1, random_state=SEED, verbose=-1,
     )
+    settings.update(params)
+    return LGBMClassifier(**settings)
 
 
 def all_models(y_train):
