@@ -1,0 +1,87 @@
+{% extends "risk/base.html" %}
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<h1>Commit risk overview</h1>
+
+{% if total == 0 %}
+  <p class="notice">No data yet. Run <code>python manage.py import_commits</code> first.</p>
+{% else %}
+  <p class="lead">
+    {{ total }} commits from the test year (2017), scored by a model that never saw them during training.
+    Each commit gets a risk level and the reasons behind it.
+  </p>
+
+  <section class="cards">
+    {% for level in levels %}
+      <div class="card level-{{ level.name|lower }}">
+        <span class="badge {{ level.name|lower }}">{{ level.name }}</span>
+        <div class="big">{{ level.count }}</div>
+        <div class="muted">{{ level.share|floatformat:1 }}% of commits</div>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section>
+    <h2>How the levels are defined</h2>
+    <ul>
+      <li><b>High</b>: risk score of at least {{ high_threshold }} (the decision threshold of the final model).</li>
+      {% if medium_threshold %}
+        <li><b>Medium</b>: risk score from {{ medium_threshold|floatformat:2 }} up to {{ high_threshold }}.
+          The lower limit was chosen on the validation year so that at least 90% of the bug-inducing commits are at or above it.</li>
+        <li><b>Low</b>: below {{ medium_threshold|floatformat:2 }}.</li>
+      {% endif %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Risk levels over the year</h2>
+    <p class="muted">Share of the commits of each month in each level.</p>
+    <div class="months">
+      {% for m in months %}
+        <div class="month" title="{{ m.label }}: {{ m.total }} commits">
+          <div class="stack">
+            <div class="seg high" style="height: {{ m.high|floatformat:1 }}%"></div>
+            <div class="seg medium" style="height: {{ m.medium|floatformat:1 }}%"></div>
+            <div class="seg low" style="height: {{ m.low|floatformat:1 }}%"></div>
+          </div>
+          <span class="month-label">{{ m.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="legend">
+      <span><i class="dot high"></i> High</span>
+      <span><i class="dot medium"></i> Medium</span>
+      <span><i class="dot low"></i> Low</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Top review priorities</h2>
+    <p class="muted">
+      Priority is the risk score divided by the number of lines changed, so small risky commits come first.
+      This was the review order that found the most bug-inducing commits for a limited review effort.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Commit</th><th>Project</th><th>Date</th><th class="num">Lines changed</th><th class="num">Risk score</th><th>Level</th></tr>
+        </thead>
+        <tbody>
+          {% for c in top %}
+            <tr>
+              <td><a class="mono" href="{% url 'detail' c.commit_id %}">{{ c.commit_id|slice:":8" }}</a></td>
+              <td>{{ c.project }}</td>
+              <td>{{ c.date|date:"Y-m-d" }}</td>
+              <td class="num">{{ c.lines_changed }}</td>
+              <td class="num">{{ c.probability|floatformat:3 }}</td>
+              <td><span class="badge {{ c.risk_level|lower }}">{{ c.risk_level }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p><a href="{% url 'commits' %}">See all commits</a></p>
+  </section>
+{% endif %}
+{% endblock %}

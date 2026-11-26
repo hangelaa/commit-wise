@@ -1,0 +1,27 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Commit risk{% endblock %} - commit-wise</title>
+  <link rel="stylesheet" href="{% static 'risk/style.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'overview' %}">commit-wise</a>
+    <nav>
+      <a href="{% url 'overview' %}">Overview</a>
+      <a href="{% url 'commits' %}">Commits</a>
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    Predictions of a LightGBM model on the 2017 test commits of the ApacheJIT dataset.
+    Bachelor thesis project on just-in-time defect prediction.
+  </footer>
+</body>
+</html>

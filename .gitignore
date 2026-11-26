@@ -224,3 +224,5 @@ data/raw/*
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+dashboard/db.sqlite3
+__pycache__/

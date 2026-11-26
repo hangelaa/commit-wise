@@ -1,0 +1,99 @@
+{% extends "risk/base.html" %}
+{% block title %}Commit {{ commit.commit_id|slice:":8" }}{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'commits' %}">&larr; Back to all commits</a></p>
+<h1>{{ commit.project }}</h1>
+<p class="mono muted">{{ commit.commit_id }}</p>
+
+<section class="cards">
+  <div class="card">
+    <div class="muted">Risk level</div>
+    <span class="badge {{ commit.risk_level|lower }} large">{{ commit.risk_level }}</span>
+  </div>
+  <div class="card">
+    <div class="muted">Risk score</div>
+    <div class="big">{{ commit.probability|floatformat:3 }}</div>
+  </div>
+  <div class="card">
+    <div class="muted">Lines changed</div>
+    <div class="big">{{ commit.lines_changed }}</div>
+  </div>
+  <div class="card">
+    <div class="muted">Date</div>
+    <div class="big small">{{ commit.date|date:"Y-m-d" }}</div>
+  </div>
+</section>
+
+<p class="muted">
+  Label in the dataset: <b>{% if commit.buggy %}bug-inducing{% else %}clean{% endif %}</b>
+  (shown for evaluation only; the model never sees it).
+</p>
+
+<section>
+  <h2>Why this score?</h2>
+  <p class="muted">The three features with the largest effect on this commit's score.</p>
+  <ul class="reasons">
+    {% for r in reasons %}
+      <li class="{% if r.raises %}raises{% else %}lowers{% endif %}">
+        <b>{% if r.raises %}&uarr; raises the risk{% else %}&darr; lowers the risk{% endif %}</b> &mdash; {{ r.text }}
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% if no_lines_added %}
+    <p class="notice">
+      This commit adds no lines. In the dataset, commits that add no lines are never labeled bug-inducing,
+      so the model learned a strong "clean" effect for them. This comes from the labeling method and is not
+      proof that such a commit is safe.
+    </p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>All feature effects</h2>
+  <p class="muted">
+    Effects are SHAP values in log-odds units: red bars to the right raise the score, blue bars to the left lower it.
+    Together with the model's baseline they add up to the commit's score.
+  </p>
+  <div class="table-wrap">
+    <table class="effects">
+      <thead>
+        <tr><th>Feature</th><th class="num">Value</th><th class="num">Effect</th><th class="chart-col">Effect on the score</th></tr>
+      </thead>
+      <tbody>
+        {% for e in effects %}
+          <tr>
+            <td>{{ e.label }} <span class="mono muted">({{ e.feature }})</span></td>
+            <td class="num">{{ e.value|floatformat:"-2" }}</td>
+            <td class="num">{% if e.raises %}+{% endif %}{{ e.effect|floatformat:2 }}</td>
+            <td class="chart-col">
+              <div class="track">
+                <div class="center"></div>
+                <div class="bar {% if e.raises %}pos{% else %}neg{% endif %}" style="left: {{ e.left|floatformat:1 }}%; width: {{ e.width|floatformat:1 }}%"></div>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>By feature group</h2>
+  <p class="muted">Correlated features share their effect, so the groups are easier to read than single features.</p>
+  <ul>
+    {% for name, total in groups %}
+      <li><b>{{ name }}</b>: {% if total > 0 %}+{% endif %}{{ total|floatformat:2 }}
+        ({% if total > 0 %}raises{% else %}lowers{% endif %} the risk)</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<p class="muted small-print">
+  The risk score is the model's output; because class weights were used in training it is not a calibrated probability,
+  so use it to rank commits. Feature descriptions follow the standard definitions of these change metrics.
+  SHAP explains what the model uses, not what causes bugs.
+</p>
+{% endblock %}

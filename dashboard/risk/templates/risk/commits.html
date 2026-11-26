@@ -1,0 +1,71 @@
+{% extends "risk/base.html" %}
+{% block title %}Commits{% endblock %}
+
+{% block content %}
+<h1>Commits</h1>
+
+<form class="filters" method="get">
+  <label>Project
+    <select name="project">
+      <option value="">All projects</option>
+      {% for p in projects %}
+        <option value="{{ p }}" {% if p == selected.project %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Level
+    <select name="level">
+      <option value="">All levels</option>
+      {% for l in levels %}
+        <option value="{{ l }}" {% if l == selected.level %}selected{% endif %}>{{ l }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Sort by
+    <select name="sort">
+      {% for value, label in sorts %}
+        <option value="{{ value }}" {% if value == selected.sort %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Commit id starts with
+    <input type="text" name="q" value="{{ selected.q }}" placeholder="e.g. 7b84">
+  </label>
+  <button type="submit">Apply</button>
+  <a class="reset" href="{% url 'commits' %}">Reset</a>
+</form>
+
+<p class="muted">{{ page.paginator.count }} commits found.</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Commit</th><th>Project</th><th>Date</th><th class="num">Lines changed</th><th class="num">Risk score</th><th>Level</th></tr>
+    </thead>
+    <tbody>
+      {% for c in page %}
+        <tr>
+          <td><a class="mono" href="{% url 'detail' c.commit_id %}">{{ c.commit_id|slice:":8" }}</a></td>
+          <td>{{ c.project }}</td>
+          <td>{{ c.date|date:"Y-m-d" }}</td>
+          <td class="num">{{ c.lines_changed }}</td>
+          <td class="num">{{ c.probability|floatformat:3 }}</td>
+          <td><span class="badge {{ c.risk_level|lower }}">{{ c.risk_level }}</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="muted">No commit matches these filters.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<nav class="pager" aria-label="Pages">
+  {% if page.has_previous %}
+    <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.previous_page_number }}">Previous</a>
+  {% endif %}
+  <span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}
+    <a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.next_page_number }}">Next</a>
+  {% endif %}
+</nav>
+{% endblock %}
